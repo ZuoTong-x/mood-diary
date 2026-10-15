@@ -10,6 +10,7 @@ declare module '*.less';
 declare module '*.scss';
 declare module '*.sass';
 declare module '*.styl';
+declare module 'virtual:uno.css';
 
 declare namespace NodeJS {
   interface ProcessEnv {

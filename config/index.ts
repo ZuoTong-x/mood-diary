@@ -1,9 +1,11 @@
 import { defineConfig, type UserConfigExport } from "@tarojs/cli";
+import path from "node:path";
 import devConfig from "./dev";
 import prodConfig from "./prod";
 import NutUIResolver from "@nutui/auto-import-resolver";
 
 import Components from "unplugin-vue-components/vite";
+import UnoCSS from "unocss/vite";
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<"vite">(async (merge) => {
@@ -12,7 +14,10 @@ export default defineConfig<"vite">(async (merge) => {
     date: "2026-10-13",
     designWidth(input) {
       // 配置 NutUI 375 尺寸
-      if (input?.file?.replace(/\\+/g, "/").indexOf("@nutui") > -1) {
+      const file = typeof input === "object" && input !== null && "file" in input && typeof input.file === "string"
+        ? input.file
+        : "";
+      if (file.replace(/\\+/g, "/").indexOf("@nutui") > -1) {
         return 375;
       }
       // 全局使用 Taro 默认的 750 尺寸
@@ -26,6 +31,9 @@ export default defineConfig<"vite">(async (merge) => {
     },
     sourceRoot: "src",
     outputRoot: "dist",
+    alias: {
+      "@": path.resolve(process.cwd(), "src"),
+    },
     plugins: ["@tarojs/plugin-html"],
     defineConstants: {},
     copy: {
@@ -36,6 +44,7 @@ export default defineConfig<"vite">(async (merge) => {
     compiler: {
       type: "vite",
       vitePlugins: [
+        UnoCSS(),
         Components({
           resolvers: [NutUIResolver({ taro: true })],
         }),
